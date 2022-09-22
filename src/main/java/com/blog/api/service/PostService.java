@@ -2,12 +2,12 @@ package com.blog.api.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.blog.api.dto.PostDTO;
 import com.blog.api.dto.PostDTOPageable;
 
 public interface PostService {
-	
-	
 
 	public PostDTO create(PostDTO newPost);
 	

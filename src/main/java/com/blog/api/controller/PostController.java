@@ -3,6 +3,7 @@ package com.blog.api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +13,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.api.assembler.PostAssembler;
 import com.blog.api.dto.PostDTO;
+import com.blog.api.dto.PostDTOPageable;
+import com.blog.api.dto.PostDTOPageableREST;
 import com.blog.api.exception.ApiException;
 import com.blog.api.service.PostService;
 import com.blog.api.util.ApiResponse;
+
 
 @RestController
 @RequestMapping("/post")
@@ -68,13 +73,32 @@ public class PostController {
 				);
 	}
 	
-	
-	public ResponseEntity<ApiResponse> getAllPageable() {
+	@GetMapping("/pageable")
+	public ResponseEntity<ApiResponse> getAllPageable(
+			@RequestParam int indexPage,
+			@RequestParam int sizePage,
+			@RequestParam(defaultValue = "ASC", required = false) String sortDirection) {
+		PostDTOPageable postPageable = postService.getPostsPageable(indexPage, sizePage, sortDirection);
 		
+		List<EntityModel<PostDTO>> postsAssembler = postPageable.dataPosts.stream()
+													.map(post -> assembler.toModel(post))
+													.toList();
 		
-		return null;
+		PostDTOPageableREST data = new PostDTOPageableREST();
+		data.currentPage = postPageable.currentPage;
+		data.dataPosts = postsAssembler;
+		data.finalPage  = postPageable.finalPage;
+		data.sizePage = postPageable.sizePage;
+		data.totalPages = postPageable.totalPages;
+		
+		ApiResponse response = new ApiResponse(data);
+		
+		return new ResponseEntity<ApiResponse>(
+					response,
+					HttpStatus.OK
+				);
 	}
-	
+
 	
 	
 	/****************************** POST ZONE ******************************/

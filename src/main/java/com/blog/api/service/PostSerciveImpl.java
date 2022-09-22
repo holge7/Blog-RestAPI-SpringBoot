@@ -51,8 +51,8 @@ public class PostSerciveImpl implements PostService{
 	public PostDTOPageable getPostsPageable(int indexPage, int sizePage, String sortDirection) {
 		Sort sort;
 		
-		if (sortDirection.equals("DESC")) sort = Sort.by(Direction.DESC, "id");
-		else sort = Sort.by(Direction.ASC, "id");
+		if (sortDirection.equals("DESC")) sort = Sort.by(Direction.DESC, "postID");
+		else sort = Sort.by(Direction.ASC, "postID");
 		
 		Pageable pageable = PageRequest.of(indexPage, sizePage, sort);
 		Page<Post> posts = postRepository.findAll(pageable);
