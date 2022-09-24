@@ -16,5 +16,13 @@ public class PostDTO {
 		this.postDescription = postDescription;
 		this.postContent = postContent;
 	}
+
+	@Override
+	public String toString() {
+		return "PostDTO [postID=" + postID + ", postTitle=" + postTitle + ", postDescription=" + postDescription
+				+ ", postContent=" + postContent + "]";
+	}
+	
+	
 	
 }

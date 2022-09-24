@@ -3,7 +3,6 @@ package com.blog.api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +20,6 @@ import com.blog.api.assembler.PostAssembler;
 import com.blog.api.dto.PostDTO;
 import com.blog.api.dto.PostDTOPageable;
 import com.blog.api.dto.PostDTOPageableREST;
-import com.blog.api.exception.ApiException;
 import com.blog.api.service.PostService;
 import com.blog.api.util.ApiResponse;
 
@@ -105,8 +104,9 @@ public class PostController {
 	
 	@PostMapping("/create")
 	public ResponseEntity<ApiResponse> createPost(@RequestBody PostDTO newPost){
+
 		PostDTO data = postService.create(newPost);
-		
+
 		EntityModel<PostDTO> rest = assembler.toModel(data);
 		ApiResponse response = new ApiResponse(rest);
 		
@@ -132,5 +132,24 @@ public class PostController {
 					HttpStatus.OK
 				);
 	}
+	
+	
+	/****************************** PUT ZONE ******************************/
+	
+	@PutMapping("/edit")
+	public ResponseEntity<ApiResponse> editPost(@RequestBody PostDTO postEdited){
+		PostDTO newPostEdited = postService.editPost(postEdited);
+
+		EntityModel<PostDTO> rest = assembler.toModel(newPostEdited);
+		ApiResponse response = new ApiResponse(rest);
+		
+		return new ResponseEntity<ApiResponse>(
+					response,
+					HttpStatus.OK
+				);
+		
+	}
+	
+	
 	
 }

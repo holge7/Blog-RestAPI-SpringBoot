@@ -1,26 +1,34 @@
 package com.blog.api.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Post {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long postID;
+	public long postID;
 	
 	@Column(nullable = false)
-	private String postTitle;
+	public String postTitle;
 	
 	@Column(nullable = false)
-	private String postDescription;
+	public String postDescription;
 	
 	@Column(nullable = false)
-	private String postContent;
+	public String postContent;
+	
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	public Set<Comment> comment = new HashSet<>();
 	
 	public Post() {}
 	

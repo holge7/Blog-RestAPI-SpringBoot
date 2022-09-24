@@ -27,6 +27,8 @@ public class PostSerciveImpl implements PostService{
 
 	@Override
 	public PostDTO create(PostDTO newPost) {
+		System.out.println("Desde service");
+		System.out.println(newPost);
 		Post post = mapPostEntity(newPost);
 		Post postSave = postRepository.save(post);
 		return mapPostDTO(postSave);
@@ -48,6 +50,7 @@ public class PostSerciveImpl implements PostService{
 		return dtoPosts;
 	}
 
+	@Override
 	public PostDTOPageable getPostsPageable(int indexPage, int sizePage, String sortDirection) {
 		Sort sort;
 		
@@ -80,9 +83,31 @@ public class PostSerciveImpl implements PostService{
 		return postDTO;
 	}
 	
+	@Override
+	public PostDTO editPost(PostDTO postEdited) {
+		System.out.println("Post edit");
+		System.out.println(postEdited);
+		Post entityPost = findOrThrow(postEdited.postID);
+		entityPost.setPostTitle(postEdited.postTitle);
+		entityPost.setPostContent(postEdited.postContent);
+		entityPost.setPostDescription(postEdited.postDescription);
+		
+		Post newPost = postRepository.save(entityPost);
+		
+		return mapPostDTO(newPost);
+	}
 	
 	
-	private Post findOrThrow(long id) {
+	
+	
+	
+	
+	
+	
+	/**************** UTILITIES ****************/
+	
+	
+	public Post findOrThrow(long id) {
 		Post entityPost = postRepository.findById(id)
 				.orElseThrow(()->new NotFoundException(resourceName, id));
 		

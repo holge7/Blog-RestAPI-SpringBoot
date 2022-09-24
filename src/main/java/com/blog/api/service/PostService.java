@@ -2,10 +2,9 @@ package com.blog.api.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import com.blog.api.dto.PostDTO;
 import com.blog.api.dto.PostDTOPageable;
+import com.blog.api.entity.Post;
 
 public interface PostService {
 
@@ -13,10 +12,14 @@ public interface PostService {
 	
 	public PostDTO findByID(long id);
 	
+	public Post findOrThrow(long id);
+	
 	public List<PostDTO> getAllPosts();
 	
 	public PostDTOPageable getPostsPageable(int indexPage, int sizePage, String sortDirection);
 	
 	public PostDTO deletePostById(long id);
+	
+	public PostDTO editPost(PostDTO postEdited);
 
 }

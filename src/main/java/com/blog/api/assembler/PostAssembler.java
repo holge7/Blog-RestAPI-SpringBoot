@@ -3,8 +3,6 @@ package com.blog.api.assembler;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
@@ -20,8 +18,7 @@ public class PostAssembler implements RepresentationModelAssembler<PostDTO, Enti
 		return EntityModel.of(post,
 				linkTo(methodOn(PostController.class).getPost(post.postID)).withSelfRel(),
 				linkTo(methodOn(PostController.class).deletePost(post.postID)).withRel("deleteSelf"),
-				linkTo(methodOn(PostController.class).getAll()).withRel("allPosts")
-				);
+				linkTo(methodOn(PostController.class).editPost(post)).withRel("edit")
+			);
 	}
-
 }
