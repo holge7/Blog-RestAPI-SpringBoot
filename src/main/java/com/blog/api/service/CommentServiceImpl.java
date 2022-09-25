@@ -1,5 +1,6 @@
 package com.blog.api.service;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,9 @@ public class CommentServiceImpl implements CommentService{
 
 	@Autowired
 	private PostService postService;
+	
+	@Autowired
+	private ModelMapper modelMapper;
 	
 	@Override
 	public CommentDTO findByID(long id) {
@@ -83,24 +87,12 @@ public class CommentServiceImpl implements CommentService{
 			.orElseThrow(()->new NotFoundException(RESOURCE_NAME, id));
 	}
 	
-	private CommentDTO mapCommentDTO(Comment comment) {
-		CommentDTO dto = new CommentDTO();
-		dto.id = comment.id;
-		dto.name = comment.name;
-		dto.email = comment.email;
-		dto.body = comment.body;
-		
-		return dto;
+	private CommentDTO mapCommentDTO(Comment entity) {
+		return modelMapper.map(entity, CommentDTO.class);
 	}
 	
 	private Comment mapCommentEntity(CommentDTO dto) {
-		Comment entity = new Comment();
-		entity.id = dto.id;
-		entity.name = dto.name;
-		entity.email = dto.email;
-		entity.body = dto.body;
-		
-		return entity;
+		return modelMapper.map(dto, Comment.class);
 	}
 
 }

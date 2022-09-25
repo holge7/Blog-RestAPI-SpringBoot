@@ -2,10 +2,13 @@ package com.blog.api.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +47,6 @@ public class PostController {
 	@GetMapping("/{id}")
 	public ResponseEntity<ApiResponse> getPost(@PathVariable long id){
 		PostDTO postDTO = postService.findByID(id);
-		
 		//Build rest service
 		EntityModel<PostDTO> rest = assembler.toModel(postDTO);
 		
@@ -103,7 +105,9 @@ public class PostController {
 	/****************************** POST ZONE ******************************/
 	
 	@PostMapping("/create")
-	public ResponseEntity<ApiResponse> createPost(@RequestBody PostDTO newPost){
+	public ResponseEntity<ApiResponse> createPost(
+			@Valid @RequestBody PostDTO newPost
+			){
 
 		PostDTO data = postService.create(newPost);
 
@@ -119,6 +123,7 @@ public class PostController {
 	
 	
 	/****************************** DELETE ZONE ******************************/
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse> deletePost(@PathVariable long id){
 		
@@ -135,9 +140,11 @@ public class PostController {
 	
 	
 	/****************************** PUT ZONE ******************************/
-	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/edit")
-	public ResponseEntity<ApiResponse> editPost(@RequestBody PostDTO postEdited){
+	public ResponseEntity<ApiResponse> editPost(
+			@Valid @RequestBody PostDTO postEdited
+			){
 		PostDTO newPostEdited = postService.editPost(postEdited);
 
 		EntityModel<PostDTO> rest = assembler.toModel(newPostEdited);

@@ -3,6 +3,7 @@ package com.blog.api.service;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,12 @@ public class PostSerciveImpl implements PostService{
 	
 	@Autowired
 	PostRepository postRepository;
+	
+	@Autowired
+	ModelMapper modelMapper;
 
 	@Override
 	public PostDTO create(PostDTO newPost) {
-		System.out.println("Desde service");
-		System.out.println(newPost);
 		Post post = mapPostEntity(newPost);
 		Post postSave = postRepository.save(post);
 		return mapPostDTO(postSave);
@@ -85,8 +87,7 @@ public class PostSerciveImpl implements PostService{
 	
 	@Override
 	public PostDTO editPost(PostDTO postEdited) {
-		System.out.println("Post edit");
-		System.out.println(postEdited);
+
 		Post entityPost = findOrThrow(postEdited.postID);
 		entityPost.setPostTitle(postEdited.postTitle);
 		entityPost.setPostContent(postEdited.postContent);
@@ -115,23 +116,11 @@ public class PostSerciveImpl implements PostService{
 	}
 	
 	public Post mapPostEntity(PostDTO dto) {
-		Post entity = new Post();
-		entity.setPostID(dto.postID);
-		entity.setPostTitle(dto.postTitle);
-		entity.setPostDescription(dto.postDescription);
-		entity.setPostContent(dto.postContent);
-		
-		return entity;
+		return modelMapper.map(dto, Post.class);
 	}
 	
 	public PostDTO mapPostDTO(Post entity) {
-		PostDTO dto = new PostDTO();
-		dto.postID = entity.getPostID();
-		dto.postTitle = entity.getPostTitle();
-		dto.postDescription = entity.getPostDescription();
-		dto.postContent = entity.getPostContent();
-		
-		return dto;
+		return modelMapper.map(entity, PostDTO.class);
 	}
 
 

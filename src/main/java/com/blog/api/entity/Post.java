@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 public class Post {
 	
@@ -27,6 +29,7 @@ public class Post {
 	@Column(nullable = false)
 	public String postContent;
 	
+	@JsonBackReference
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	public Set<Comment> comment = new HashSet<>();
 	
@@ -71,5 +74,21 @@ public class Post {
 	public void setPostContent(String postContent) {
 		this.postContent = postContent;
 	}
+
+	public Set<Comment> getComment() {
+		return comment;
+	}
+	
+	public void setComment(Set<Comment> comment) {
+		this.comment = comment;
+	}
+	
+	@Override
+	public String toString() {
+		return "Post [postID=" + postID + ", postTitle=" + postTitle + ", postDescription=" + postDescription
+				+ ", postContent=" + postContent + ", comment=" + comment + "]";
+	}
+
+	
 	
 }

@@ -14,6 +14,11 @@ public class NotFoundException extends ApiException {
 		super(String.format(defaultMsg, resource, id));
 	}
 	
+	public NotFoundException(String resource, String property) {
+		super(String.format(defaultMsg, resource, property));
+	}
+	
+	
 	//Custom msg
 	public NotFoundException(String msg) {
 		super(msg);

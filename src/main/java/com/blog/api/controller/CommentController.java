@@ -2,6 +2,8 @@ package com.blog.api.controller;
 
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -78,7 +80,7 @@ public class CommentController {
 	@PostMapping("/{postID}")
 	public ResponseEntity<ApiResponse> saveComment(
 			@PathVariable(value = "postID") long postID,
-			@RequestBody CommentDTO commentDTO){
+			@Valid @RequestBody CommentDTO commentDTO){
 		
 		CommentDTO dto = commentService.createComment(postID, commentDTO);
 		

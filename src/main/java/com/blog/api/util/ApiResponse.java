@@ -1,12 +1,10 @@
 package com.blog.api.util;
 
 public class ApiResponse {
-	
-	// Code 1 -> OK
-	
+
 	public ApiResponseCodeStatus status;
 	public Object data;
-	public String msg;
+	public Object msg;
 	
 	public ApiResponse() {}
 	
@@ -16,7 +14,7 @@ public class ApiResponse {
 		this.msg = "";
 	}
 	
-	public ApiResponse(ApiResponseCodeStatus status, String msg) {
+	public ApiResponse(ApiResponseCodeStatus status, Object msg) {
 		this.status = status;
 		this.msg = msg;
 	}
