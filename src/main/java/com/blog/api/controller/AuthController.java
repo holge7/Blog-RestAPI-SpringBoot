@@ -11,8 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,14 +18,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.api.dto.LoginDTO;
 import com.blog.api.dto.RegisterDTO;
-import com.blog.api.entity.Comment;
 import com.blog.api.entity.Rol;
 import com.blog.api.entity.User;
 import com.blog.api.repository.RolRepository;
 import com.blog.api.repository.UserRepository;
+import com.blog.api.security.JwtTokenProvider;
 import com.blog.api.util.ApiResponse;
 import com.blog.api.util.ApiResponseCodeStatus;
 
+/**
+ * Controller for loggin and user registration
+ * 
+ * @author Jorge
+ *
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -45,19 +49,26 @@ public class AuthController {
 	private PasswordEncoder passwordEncoder;
 	
 	@Autowired
-	private ModelMapper modelMapper;
+	private JwtTokenProvider jwtTokenProvider;
 	
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse> authenticateUser(@RequestBody LoginDTO loginDTO){
 
+		// Validate the existence of the user/password
 		Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(loginDTO.getUsernameOrEmail(), loginDTO.getPassword()
 				));
 
+		// If it exists, we store it details in the securityContext
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		
+		// Generate a JWT
+		String token = jwtTokenProvider.tokenGeneration(authentication);
+		
+		// We return it
 		ApiResponse response = new ApiResponse();
 		response.msg = "Welcome!, u are login";
+		response.data = token;
 		
 		return new ResponseEntity<ApiResponse>(
 					response,
@@ -65,7 +76,7 @@ public class AuthController {
 				);
 	}
 	
-	@PostMapping("/log")
+	@PostMapping("/register")
 	public ResponseEntity<ApiResponse> logUser(@RequestBody RegisterDTO register){
 		if (userRepository.existsByUsername(register.getName())) {
 			ApiResponse response = new ApiResponse(ApiResponseCodeStatus.ERROR, "This user name already exists");
@@ -100,10 +111,5 @@ public class AuthController {
 					HttpStatus.OK
 				);
 	}
-	
-	
-	
-	
-	
 	
 }
