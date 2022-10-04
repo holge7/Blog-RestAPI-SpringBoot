@@ -11,7 +11,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that will be in cherge of generating an unauthorized user error
+ * Class that will be in charge of generating an unauthorized user error
  * 
  * @author Jorge
  *

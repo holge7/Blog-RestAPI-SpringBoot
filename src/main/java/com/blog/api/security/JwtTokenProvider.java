@@ -17,7 +17,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
-
+/**
+ * Class in charge of the main functions for the JWT (generation, get, validate)
+ * 
+ * @author Jorge
+ *
+ */
 @Component
 public class JwtTokenProvider {
 	
@@ -46,18 +51,20 @@ public class JwtTokenProvider {
 	
 	//Obtain the user
 	public String getTokenUsername(String token) {
-		Claims claims = Jwts.parser()
-				.setSigningKey(jwtSecret)
-				.parseClaimsJws(token)
+		Claims claims = Jwts.parser() // Lets starts with "decryption"
+				.setSigningKey(jwtSecret) // Set sign key to decrypt
+				.parseClaimsJws(token) // Set the JWT token
 				.getBody();
 		
-		return claims.getSubject();
+		return claims.getSubject(); 
 	}
 	
 	//Validates that the token is correctly formed and with good data
 	public boolean validateToken(String token) {
 		try {
-			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+			Jwts.parser()
+				.setSigningKey(jwtSecret)
+				.parseClaimsJws(token);
 			return true;
 		}catch (SignatureException ex) {
 			throw new ApiException("Not valid JWT sign");

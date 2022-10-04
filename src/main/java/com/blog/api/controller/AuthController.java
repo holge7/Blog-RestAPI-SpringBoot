@@ -2,7 +2,6 @@ package com.blog.api.controller;
 
 import java.util.Collections;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +57,7 @@ public class AuthController {
 		Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(loginDTO.getUsernameOrEmail(), loginDTO.getPassword()
 				));
+	
 
 		// If it exists, we store it details in the securityContext
 		SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -78,33 +78,38 @@ public class AuthController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<ApiResponse> logUser(@RequestBody RegisterDTO register){
+		
+		ApiResponse response = null;
+		
+		// If the userName/email already exists
 		if (userRepository.existsByUsername(register.getName())) {
-			ApiResponse response = new ApiResponse(ApiResponseCodeStatus.ERROR, "This user name already exists");
-			return new ResponseEntity<ApiResponse>(
-						response,
-						HttpStatus.BAD_REQUEST
-					);
+			response = new ApiResponse(ApiResponseCodeStatus.ERROR, "This user name already exists");
+		}else if (userRepository.existsByEmail(register.getEmail())) {
+			response = new ApiResponse(ApiResponseCodeStatus.ERROR, "This email already exists");
 		}
 		
-		if (userRepository.existsByEmail(register.getEmail())) {
-			ApiResponse response = new ApiResponse(ApiResponseCodeStatus.ERROR, "This email already exists");
+		if (response != null) {
 			return new ResponseEntity<ApiResponse>(
-						response,
-						HttpStatus.BAD_REQUEST
-					);
+					response,
+					HttpStatus.BAD_REQUEST
+				);			
 		}
 		
+		// Create new user
 		User user = new User();
 		user.setName(register.getName());
 		user.setUsername(register.getUsername());
 		user.setEmail(register.getEmail());
-		user.setPassword(register.getPassword());
+		user.setPassword(passwordEncoder.encode(register.getPassword()));
 		
+		// Assign their roles
 		Rol rols = rolRepository.findByName("ROLE_USER").get();
 		user.setRol(Collections.singleton(rols));
 		
+		// Save the user
 		userRepository.save(user);
-		ApiResponse response = new ApiResponse(ApiResponseCodeStatus.OK, "User register successfully");
+		
+		response = new ApiResponse(ApiResponseCodeStatus.OK, "User register successfully");
 		
 		return new ResponseEntity<ApiResponse>(
 					response,
