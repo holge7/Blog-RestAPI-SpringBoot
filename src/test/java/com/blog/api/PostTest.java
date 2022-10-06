@@ -56,6 +56,10 @@ public class PostTest {
 	private static String POST_PATH = "/post";
 	private String resourceName = "Post";
 	
+	/**
+	 * Find one post for ID
+	 * @throws Exception
+	 */
 	@Test
 	void findByID() throws Exception {
 		when(postService.findByID(1)).thenReturn(post1);

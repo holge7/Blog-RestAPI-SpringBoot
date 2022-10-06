@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.blog.api.assembler.CommentAssembler;
 import com.blog.api.controller.CommentController;
-import com.blog.api.dto.CommentDTO;
 import com.blog.api.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.blog.api.resource.TestEnty;
 
 @WebMvcTest(CommentController.class)
 @ComponentScan("com.blog.api")
@@ -29,6 +28,7 @@ public class CommentTest {
 	CommentAssembler commentAssembler;
 	
 	ObjectMapper objectMapper;
+
 	
 	@BeforeEach
 	void config() {
@@ -39,9 +39,5 @@ public class CommentTest {
 	void findByID(long id) {
 		
 	}
-	
-	
-	
-	
 	
 }
