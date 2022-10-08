@@ -1,6 +1,5 @@
 package com.blog.api.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -14,8 +13,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomAuthenticationManager implements AuthenticationManager{
 	
-	@Autowired
+
 	private CustomUserDetailsService customUserDetailsService;
+	
+	public CustomAuthenticationManager(CustomUserDetailsService customUserDetailsService) {
+		this.customUserDetailsService = customUserDetailsService;
+	}
 	
 	@Bean
 	PasswordEncoder passwordEncoder() {

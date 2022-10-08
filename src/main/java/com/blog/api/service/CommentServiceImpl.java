@@ -1,7 +1,6 @@
 package com.blog.api.service;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.blog.api.dto.CommentDTO;
@@ -18,14 +17,15 @@ public class CommentServiceImpl implements CommentService{
 	
 	private final String RESOURCE_NAME = "comment";
 	
-	@Autowired
 	private CommentRepository commentRepository;
-
-	@Autowired
 	private PostService postService;
-	
-	@Autowired
 	private ModelMapper modelMapper;
+	
+	public CommentServiceImpl(CommentRepository commentRepository, PostService postService, ModelMapper modelMapper){
+		this.commentRepository = commentRepository;
+		this.postService = postService;
+		this.modelMapper = modelMapper;
+	}
 	
 	@Override
 	public CommentDTO findByID(long id) {

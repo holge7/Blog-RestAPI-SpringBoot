@@ -2,7 +2,6 @@ package com.blog.api.controller;
 
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,20 +34,25 @@ import com.blog.api.util.ApiResponseCodeStatus;
 @RequestMapping("/api/auth")
 public class AuthController {
 	
-	@Autowired
 	private AuthenticationManager authenticationManager;
-	
-	@Autowired
 	private UserRepository userRepository;
-	
-	@Autowired
 	private RolRepository rolRepository;
-	
-	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
-	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
+	
+	public AuthController(
+			AuthenticationManager authenticationManager, 
+			UserRepository userRepository, 
+			RolRepository rolRepository, 
+			PasswordEncoder passwordEncoder, 
+			JwtTokenProvider jwtTokenProvider) {
+		this.authenticationManager = authenticationManager;
+		this.userRepository = userRepository;
+		this.rolRepository = rolRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.jwtTokenProvider = jwtTokenProvider;
+	}
+	
 	
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse> authenticateUser(@RequestBody LoginDTO loginDTO){
@@ -67,6 +71,7 @@ public class AuthController {
 		
 		// We return it
 		ApiResponse response = new ApiResponse();
+		response.status = ApiResponseCodeStatus.OK;
 		response.msg = "Welcome!, u are login";
 		response.data = token;
 		

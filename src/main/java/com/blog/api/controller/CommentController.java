@@ -4,7 +4,6 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +24,17 @@ import com.blog.api.util.ApiResponse;
 import java.util.List;
 
 @RestController
-@RequestMapping("/comment")
+@RequestMapping("api/comments")
 public class CommentController {
 	
-	@Autowired
+
 	private CommentService commentService;
-	
-	@Autowired
 	private CommentAssembler commentAssembler;
+	
+	public CommentController(CommentService commentService, CommentAssembler commentAssembler) {
+		this.commentService = commentService;
+		this.commentAssembler = commentAssembler;
+	}
 	
 	
 	/****************************** GET ZONE ******************************/
@@ -46,6 +48,7 @@ public class CommentController {
 		return generateResponse(dto, HttpStatus.OK);
 	}
 	
+
 	@GetMapping("/post/{postID}")
 	public ResponseEntity<ApiResponse> getCommentByPost(
 			@PathVariable(value = "postID") long postID){
@@ -70,7 +73,7 @@ public class CommentController {
 		
 		CommentDTO dto = commentService.deleteComment(commentID);
 		
-		return generateResponse(dto, HttpStatus.OK);
+		return generateResponse(dto, HttpStatus.ACCEPTED);
 	}
 	
 	
@@ -93,7 +96,7 @@ public class CommentController {
 	
 	/****************************** PUT ZONE ******************************/
 	
-	@PutMapping("/edit/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<ApiResponse> editComment(
 				@PathVariable(value = "id") long id,
 				@RequestBody Map<String, String> data

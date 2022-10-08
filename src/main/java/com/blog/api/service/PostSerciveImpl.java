@@ -23,11 +23,13 @@ public class PostSerciveImpl implements PostService{
 	
 	private String resourceName = "Post";
 	
-	@Autowired
 	PostRepository postRepository;
-	
-	@Autowired
 	ModelMapper modelMapper;
+	
+	public PostSerciveImpl(PostRepository postRepository, ModelMapper modelMapper) {
+		this.postRepository = postRepository;
+		this.modelMapper = modelMapper;
+	}
 
 	@Override
 	public PostDTO create(PostDTO newPost) {

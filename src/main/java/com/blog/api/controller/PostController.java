@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +27,16 @@ import com.blog.api.util.ApiResponse;
 
 
 @RestController
-@RequestMapping("/post")
+@RequestMapping("api/posts")
 public class PostController {
 	
-	@Autowired
 	PostService postService;
-	
-	@Autowired
 	PostAssembler assembler;
+	
+	public PostController(PostService postService, PostAssembler assembler) {
+		this.postService = postService;
+		this.assembler = assembler;
+	}
 	
 	/****************************** GET ZONE ******************************/
 	
@@ -58,7 +59,7 @@ public class PostController {
 				);
 	}
 	
-	@GetMapping("/all")
+	@GetMapping("")
 	public ResponseEntity<ApiResponse> getAll(){
 		List<PostDTO> allPosts = postService.getAllPosts();
 		
@@ -79,6 +80,7 @@ public class PostController {
 			@RequestParam int indexPage,
 			@RequestParam int sizePage,
 			@RequestParam(defaultValue = "ASC", required = false) String sortDirection) {
+		System.out.println("Eyy");
 		PostDTOPageable postPageable = postService.getPostsPageable(indexPage, sizePage, sortDirection);
 		
 		List<EntityModel<PostDTO>> postsAssembler = postPageable.dataPosts.stream()
@@ -104,7 +106,7 @@ public class PostController {
 	
 	/****************************** POST ZONE ******************************/
 	
-	@PostMapping("/create")
+	@PostMapping("")
 	public ResponseEntity<ApiResponse> createPost(
 			@Valid @RequestBody PostDTO newPost
 			){
@@ -134,7 +136,7 @@ public class PostController {
 		
 		return new ResponseEntity<ApiResponse>(
 					response,
-					HttpStatus.OK
+					HttpStatus.ACCEPTED
 				);
 	}
 	
