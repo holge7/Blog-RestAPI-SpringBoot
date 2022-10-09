@@ -6,9 +6,12 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -18,63 +21,77 @@ public class Post {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public long postID;
-	
-	@Column(nullable = false)
-	public String postTitle;
-	
-	@Column(nullable = false)
-	public String postDescription;
-	
-	@Column(nullable = false)
-	public String postContent;
+	public long id;
 	
 	@JsonBackReference
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "user_id", nullable = false)
+	public User user;
+	
+	@Column(nullable = false)
+	public String title;
+	
+	@Column(nullable = false)
+	public String description;
+	
+	@Column(nullable = false)
+	public String content;
+	
+	@JsonBackReference
+	@OneToMany(fetch = FetchType.LAZY ,mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	public Set<Comment> comment = new HashSet<>();
 	
 	public Post() {}
 	
-	public Post(long postID, String postTitle, String postDescription, String postContent) {
+	public Post(long id, String title, String description, String content, User user) {
 		super();
-		this.postID = postID;
-		this.postTitle = postTitle;
-		this.postDescription = postDescription;
-		this.postContent = postContent;
+		this.id = id;
+		this.title = title;
+		this.description = description;
+		this.content = content;
+		this.user = user;
 	}
 
-	public long getPostID() {
-		return postID;
+	public long getId() {
+		return id;
 	}
 
-	public void setPostID(long postID) {
-		this.postID = postID;
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	public User getUser() {
+		return user;
+	}
+	
+	public void setUser(User user) {
+		this.user = user;
 	}
 
-	public String getPostTitle() {
-		return postTitle;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setPostTitle(String postTitle) {
-		this.postTitle = postTitle;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
-	public String getPostDescription() {
-		return postDescription;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setPostDescription(String postDescription) {
-		this.postDescription = postDescription;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public String getPostContent() {
-		return postContent;
+		return content;
 	}
 
-	public void setPostContent(String postContent) {
-		this.postContent = postContent;
+	public void setContent(String content) {
+		this.content = content;
 	}
-
+/*
 	public Set<Comment> getComment() {
 		return comment;
 	}
@@ -82,11 +99,11 @@ public class Post {
 	public void setComment(Set<Comment> comment) {
 		this.comment = comment;
 	}
-	
+	*/
 	@Override
 	public String toString() {
-		return "Post [postID=" + postID + ", postTitle=" + postTitle + ", postDescription=" + postDescription
-				+ ", postContent=" + postContent + ", comment=" + comment + "]";
+		return "Post [id=" + id + ", postTitle=" + title + ", postDescription=" + description
+				+ ", postContent=" + content + "]";
 	}
 
 	

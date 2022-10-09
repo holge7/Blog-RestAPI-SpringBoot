@@ -7,6 +7,8 @@ import javax.validation.Valid;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.api.assembler.CommentAssembler;
 import com.blog.api.dto.CommentDTO;
+import com.blog.api.entity.User;
+import com.blog.api.exception.NotFoundException;
+import com.blog.api.repository.UserRepository;
 import com.blog.api.service.CommentService;
 import com.blog.api.util.ApiResponse;
 
@@ -30,10 +35,12 @@ public class CommentController {
 
 	private CommentService commentService;
 	private CommentAssembler commentAssembler;
+	private UserRepository userRepository;
 	
-	public CommentController(CommentService commentService, CommentAssembler commentAssembler) {
+	public CommentController(CommentService commentService, UserRepository userRepository, CommentAssembler commentAssembler) {
 		this.commentService = commentService;
 		this.commentAssembler = commentAssembler;
+		this.userRepository = userRepository;
 	}
 	
 	
@@ -84,8 +91,13 @@ public class CommentController {
 	public ResponseEntity<ApiResponse> saveComment(
 			@PathVariable(value = "postID") long postID,
 			@Valid @RequestBody CommentDTO commentDTO){
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
-		CommentDTO dto = commentService.createComment(postID, commentDTO);
+		User user = userRepository.findByEmail(auth.getName())
+				.orElseThrow(()->new NotFoundException("") );
+
+		
+		CommentDTO dto = commentService.createComment(postID, commentDTO, user);
 		
 		return generateResponse(dto, HttpStatus.OK);
 	}

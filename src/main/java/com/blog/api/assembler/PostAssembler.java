@@ -16,9 +16,9 @@ public class PostAssembler implements RepresentationModelAssembler<PostDTO, Enti
 	@Override
 	public EntityModel<PostDTO> toModel(PostDTO post) {
 		return EntityModel.of(post,
-				linkTo(methodOn(PostController.class).getPost(post.postID)).withSelfRel(),
-				linkTo(methodOn(PostController.class).deletePost(post.postID)).withRel("deleteSelf"),
-				linkTo(methodOn(PostController.class).editPost(post)).withRel("edit")
+				linkTo(methodOn(PostController.class).getPost(post.id)).withSelfRel(),
+				linkTo(methodOn(PostController.class).deletePost(post.id)).withRel("deleteSelf"),
+				linkTo(methodOn(PostController.class).editPost(post.id, post)).withRel("edit")
 			);
 	}
 }

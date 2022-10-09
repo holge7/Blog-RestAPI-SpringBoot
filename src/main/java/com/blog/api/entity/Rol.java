@@ -13,19 +13,19 @@ public class Rol {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long rolID;
+	private long id;
 	
 	@Column(length = 60)
 	private String name;
 	
 	public Rol() {}
 
-	public long getRolID() {
-		return rolID;
+	public long getId() {
+		return id;
 	}
 
-	public void setRolID(long rolID) {
-		this.rolID = rolID;
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public String getName() {

@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -23,25 +24,31 @@ public class User {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long userID;
+	private long id;
 	
 	private String name;
 	private String username;
 	private String email;
 	private String password;
 	
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinTable(name = "user_rol", joinColumns = @JoinColumn(name = "userID", referencedColumnName = "userID"), inverseJoinColumns = @JoinColumn(name = "rolID", referencedColumnName = "rolID"))
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "user_rol", joinColumns = @JoinColumn(name = "userID", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "rolID", referencedColumnName = "id"))
 	private Set<Rol> rol = new HashSet<>();
+	
+	@OneToMany(fetch = FetchType.LAZY ,mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Post> posts = new HashSet<>();
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Comment> comments = new HashSet<>();
 	
 	public User() {}
 
-	public long getUserID() {
-		return userID;
+	public long getId() {
+		return id;
 	}
 
-	public void setUserID(long userID) {
-		this.userID = userID;
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -82,6 +89,12 @@ public class User {
 
 	public void setRol(Set<Rol> rol) {
 		this.rol = rol;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", username=" + username + ", email=" + email + ", password="
+				+ password + ", rol=" + rol + ", posts=" + posts + "]";
 	}
 	
 	

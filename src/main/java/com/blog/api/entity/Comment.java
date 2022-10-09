@@ -1,6 +1,7 @@
 package com.blog.api.entity;
 
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -21,22 +22,23 @@ public class Comment {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public long id;
 	
-	public String name;
-	public String email;
-	public String body;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "user_id", nullable = false)
+	public User user;
 	
 	@JsonBackReference
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "postID", nullable = false)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "post_id", nullable = false)
 	public Post post;
+
+	public String body;
 
 	public Comment() {}
 
-	public Comment(long id, String name, String email, String body, Post post) {
+	public Comment(long id, User user, String body, Post post) {
 		super();
 		this.id = id;
-		this.name = name;
-		this.email = email;
+		this.user = user;
 		this.body = body;
 		this.post = post;
 	}
@@ -49,20 +51,12 @@ public class Comment {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public User getUser() {
+		return user;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public String getBody() {
@@ -80,9 +74,11 @@ public class Comment {
 	public void setPost(Post post) {
 		this.post = post;
 	}
-	
-	
-	
+
+	@Override
+	public String toString() {
+		return "Comment [id=" + id + ", user=" + user + ", post=" + post + ", body=" + body + "]";
+	}
 	
 	
 }

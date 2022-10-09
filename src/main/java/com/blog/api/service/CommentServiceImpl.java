@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.blog.api.dto.CommentDTO;
 import com.blog.api.entity.Comment;
 import com.blog.api.entity.Post;
+import com.blog.api.entity.User;
 import com.blog.api.exception.NotFoundException;
 import com.blog.api.repository.CommentRepository;
 
@@ -43,7 +44,7 @@ public class CommentServiceImpl implements CommentService{
 	
 	@Override
 	public List<CommentDTO> findByUser(String email){
-		List<Comment> comments = commentRepository.findByEmail(email);
+		List<Comment> comments = commentRepository.findByUserEmail(email);
 		
 		return comments.stream()
 				.map(comment -> mapCommentDTO(comment))
@@ -51,12 +52,14 @@ public class CommentServiceImpl implements CommentService{
 	}
 	
 	@Override
-	public CommentDTO createComment(long postID, CommentDTO commentDTO) {
+	public CommentDTO createComment(long postID, CommentDTO commentDTO, User user) {
 		
 		Comment comment = mapCommentEntity(commentDTO);
 		Post post = postService.findOrThrow(postID);
 		
 		comment.post = post;
+		comment.user = user;
+		
 		Comment newComment = commentRepository.save(comment);
 		
 		return mapCommentDTO(newComment);

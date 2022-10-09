@@ -18,7 +18,7 @@ public class CommentAssembler implements RepresentationModelAssembler<CommentDTO
 		return EntityModel.of(comment,
 					linkTo(methodOn(CommentController.class).getCommentID(comment.id)).withSelfRel(),
 					linkTo(methodOn(CommentController.class).getCommentByPost(comment.postID)).withRel("commentOfPost"),
-					linkTo(methodOn(CommentController.class).getCommentByUser(comment.email)).withRel("yourComments"),
+					linkTo(methodOn(CommentController.class).getCommentByUser(comment.userEmail)).withRel("yourComments"),
 					linkTo(methodOn(CommentController.class).deleteComment(comment.id)).withRel("deleteSelf")	
 				);
 	}

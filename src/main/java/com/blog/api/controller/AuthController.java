@@ -85,7 +85,7 @@ public class AuthController {
 	public ResponseEntity<ApiResponse> logUser(@RequestBody RegisterDTO register){
 		
 		ApiResponse response = null;
-		
+
 		// If the userName/email already exists
 		if (userRepository.existsByUsername(register.getName())) {
 			response = new ApiResponse(ApiResponseCodeStatus.ERROR, "This user name already exists");

@@ -7,7 +7,8 @@ import javax.validation.Valid;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,9 @@ import com.blog.api.assembler.PostAssembler;
 import com.blog.api.dto.PostDTO;
 import com.blog.api.dto.PostDTOPageable;
 import com.blog.api.dto.PostDTOPageableREST;
+import com.blog.api.entity.User;
+import com.blog.api.exception.NotFoundException;
+import com.blog.api.repository.UserRepository;
 import com.blog.api.service.PostService;
 import com.blog.api.util.ApiResponse;
 
@@ -32,9 +36,11 @@ public class PostController {
 	
 	PostService postService;
 	PostAssembler assembler;
+	UserRepository userRepository;
 	
-	public PostController(PostService postService, PostAssembler assembler) {
+	public PostController(PostService postService, UserRepository userRepository,PostAssembler assembler) {
 		this.postService = postService;
+		this.userRepository = userRepository;
 		this.assembler = assembler;
 	}
 	
@@ -42,6 +48,8 @@ public class PostController {
 	
 	@GetMapping("/test")
 	public String test() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println(auth.getName());
 		return "test passed :)";
 	}
 	
@@ -80,9 +88,7 @@ public class PostController {
 			@RequestParam int indexPage,
 			@RequestParam int sizePage,
 			@RequestParam(defaultValue = "ASC", required = false) String sortDirection) {
-		System.out.println("Eyy");
 		PostDTOPageable postPageable = postService.getPostsPageable(indexPage, sizePage, sortDirection);
-		
 		List<EntityModel<PostDTO>> postsAssembler = postPageable.dataPosts.stream()
 													.map(post -> assembler.toModel(post))
 													.toList();
@@ -110,8 +116,12 @@ public class PostController {
 	public ResponseEntity<ApiResponse> createPost(
 			@Valid @RequestBody PostDTO newPost
 			){
-
-		PostDTO data = postService.create(newPost);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		User user = userRepository.findByEmail(auth.getName())
+				.orElseThrow(()->new NotFoundException("") );
+		
+		PostDTO data = postService.create(newPost, user);
 
 		EntityModel<PostDTO> rest = assembler.toModel(data);
 		ApiResponse response = new ApiResponse(rest);
@@ -123,12 +133,11 @@ public class PostController {
 	}
 	
 	
-	
 	/****************************** DELETE ZONE ******************************/
-	@PreAuthorize("hasRole('ADMIN')")
+	//@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse> deletePost(@PathVariable long id){
-		
+		System.out.println("Id: "+id);
 		PostDTO data = postService.deletePostById(id);		
 		
 		EntityModel<PostDTO> rest = assembler.toModel(data);
@@ -142,13 +151,14 @@ public class PostController {
 	
 	
 	/****************************** PUT ZONE ******************************/
-	@PreAuthorize("hasRole('ADMIN')")
-	@PutMapping("/edit")
+	//@PreAuthorize("hasRole('ADMIN')")
+	@PutMapping("/{id}")
 	public ResponseEntity<ApiResponse> editPost(
+			@PathVariable long id,
 			@Valid @RequestBody PostDTO postEdited
 			){
+		postEdited.id=id;
 		PostDTO newPostEdited = postService.editPost(postEdited);
-
 		EntityModel<PostDTO> rest = assembler.toModel(newPostEdited);
 		ApiResponse response = new ApiResponse(rest);
 		

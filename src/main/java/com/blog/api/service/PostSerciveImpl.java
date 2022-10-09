@@ -4,7 +4,6 @@ package com.blog.api.service;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -15,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import com.blog.api.dto.PostDTO;
 import com.blog.api.dto.PostDTOPageable;
 import com.blog.api.entity.Post;
+import com.blog.api.entity.User;
 import com.blog.api.exception.NotFoundException;
 import com.blog.api.repository.PostRepository;
 
@@ -32,8 +32,9 @@ public class PostSerciveImpl implements PostService{
 	}
 
 	@Override
-	public PostDTO create(PostDTO newPost) {
+	public PostDTO create(PostDTO newPost, User user) {
 		Post post = mapPostEntity(newPost);
+		post.user = user;
 		Post postSave = postRepository.save(post);
 		return mapPostDTO(postSave);
 	}
@@ -58,8 +59,8 @@ public class PostSerciveImpl implements PostService{
 	public PostDTOPageable getPostsPageable(int indexPage, int sizePage, String sortDirection) {
 		Sort sort;
 		
-		if (sortDirection.equals("DESC")) sort = Sort.by(Direction.DESC, "postID");
-		else sort = Sort.by(Direction.ASC, "postID");
+		if (sortDirection.equals("DESC")) sort = Sort.by(Direction.DESC, "id");
+		else sort = Sort.by(Direction.ASC, "id");
 		
 		Pageable pageable = PageRequest.of(indexPage, sizePage, sort);
 		Page<Post> posts = postRepository.findAll(pageable);
@@ -90,10 +91,10 @@ public class PostSerciveImpl implements PostService{
 	@Override
 	public PostDTO editPost(PostDTO postEdited) {
 
-		Post entityPost = findOrThrow(postEdited.postID);
-		entityPost.setPostTitle(postEdited.postTitle);
-		entityPost.setPostContent(postEdited.postContent);
-		entityPost.setPostDescription(postEdited.postDescription);
+		Post entityPost = findOrThrow(postEdited.id);
+		entityPost.setTitle(postEdited.title);
+		entityPost.setContent(postEdited.content);
+		entityPost.setDescription(postEdited.description);
 		
 		Post newPost = postRepository.save(entityPost);
 		
