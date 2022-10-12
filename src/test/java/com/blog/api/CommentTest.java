@@ -1,4 +1,4 @@
-package com.blog.api;
+/*package com.blog.api;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,3 +40,4 @@ public class CommentTest {
 	}
 	
 }
+*/

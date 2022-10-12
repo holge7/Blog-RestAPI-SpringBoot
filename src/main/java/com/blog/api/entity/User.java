@@ -42,6 +42,14 @@ public class User {
 	private Set<Comment> comments = new HashSet<>();
 	
 	public User() {}
+	
+	public User(long id, String name, String username, String email, String password, Set<Rol> rol) {
+		this.name = name;
+		this.username = username;
+		this.email = email;
+		this.password = password;
+		this.rol = rol;
+	}
 
 	public long getId() {
 		return id;

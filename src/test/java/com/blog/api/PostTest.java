@@ -1,7 +1,9 @@
 package com.blog.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
@@ -12,6 +14,7 @@ import com.blog.api.assembler.PostAssembler;
 import com.blog.api.controller.PostController;
 import com.blog.api.dto.PostDTO;
 import com.blog.api.exception.NotFoundException;
+import com.blog.api.repository.UserRepository;
 import com.blog.api.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,40 +31,45 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@WebMvcTest(PostController.class) 
-@ComponentScan({ "com.blog.api" })
+//@WebMvcTest(PostController.class) 
+@AutoConfigureMockMvc
+@SpringBootTest
 public class PostTest {
-	
-	@Autowired
-	private MockMvc mockMvc;
+
 	
 	@MockBean
 	private PostService postService;
-	
 	@Autowired
-	PostAssembler assembler;
-	
-	ObjectMapper objectMapper;
+	private MockMvc mockMvc;
+	@Autowired
+	private PostAssembler assembler;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private ObjectMapper objectMapper;
 	
 	@BeforeEach
 	void config() {
 		objectMapper = new ObjectMapper();
 	}
+	
+
 	/*
-	private PostDTO post1 = new PostDTO(1L, "Test 1", "description 1", "content 1");
-	private PostDTO post2 = new PostDTO(2L, "Test 2", "description 2", "content 2");
-	private PostDTO post3 = new PostDTO(3L, "Test 3", "description 3", "content 3");
-	private PostDTO post4 = new PostDTO(4L, "Test 4", "description 4", "content 4");
+	private PostDTO post1 = new PostDTO(1L, "", "Test 1", "description 1", "content 1");
+	private PostDTO post2 = new PostDTO(2L, "", "Test 2", "description 2", "content 2");
+	private PostDTO post3 = new PostDTO(3L, "", "Test 3", "description 3", "content 3");
+	private PostDTO post4 = new PostDTO(4L, "", "Test 4", "description 4", "content 4");
 
 	private static String POST_PATH = "/post";
 	private String resourceName = "Post";
-	
+	*/
 	/**
 	 * Find one post for ID
 	 * @throws Exception
 	 */
 	/*@Test
 	void findByID() throws Exception {
+		System.out.println("comienzo test");
 		when(postService.findByID(1)).thenReturn(post1);
 		
 		ResultActions result = mockMvc.perform(get("/post/1").contentType(MediaType.APPLICATION_JSON));
@@ -72,8 +80,8 @@ public class PostTest {
 		validPost(result, post1);
 		
 		verify(postService).findByID(1);
-	}
-	
+	}*/
+	/*
 	@Test
 	void findByIDWrong() throws Exception {
 		Long id = 1L;

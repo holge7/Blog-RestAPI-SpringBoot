@@ -23,11 +23,10 @@ public class PostDTO {
 	
 	public PostDTO() {}
 
-	public PostDTO(long id, String userEmail, String userName,String title, String description, String content) {
+	public PostDTO(long id, String userEmail, String title, String description, String content) {
 		super();
 		this.id = id;
 		this.userEmail = userEmail;
-		this.userName = userName;
 		this.title = title;
 		this.description = description;
 		this.content = content;
