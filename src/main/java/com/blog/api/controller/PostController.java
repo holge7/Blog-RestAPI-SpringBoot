@@ -56,6 +56,7 @@ public class PostController {
 	@GetMapping("/{id}")
 	public ResponseEntity<ApiResponse> getPost(@PathVariable long id){
 		PostDTO postDTO = postService.findByID(id);
+
 		//Build rest service
 		EntityModel<PostDTO> rest = assembler.toModel(postDTO);
 		
@@ -137,7 +138,6 @@ public class PostController {
 	//@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse> deletePost(@PathVariable long id){
-		System.out.println("Id: "+id);
 		PostDTO data = postService.deletePostById(id);		
 		
 		EntityModel<PostDTO> rest = assembler.toModel(data);

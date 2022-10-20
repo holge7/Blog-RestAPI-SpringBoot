@@ -30,6 +30,7 @@ public class User {
 	private String username;
 	private String email;
 	private String password;
+	private String avatar;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_rol", joinColumns = @JoinColumn(name = "userID", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "rolID", referencedColumnName = "id"))
@@ -43,13 +44,15 @@ public class User {
 	
 	public User() {}
 	
-	public User(long id, String name, String username, String email, String password, Set<Rol> rol) {
+	public User(String name, String username, String email, String password, Set<Rol> rol, String avatar) {
 		this.name = name;
 		this.username = username;
 		this.email = email;
 		this.password = password;
 		this.rol = rol;
+		this.avatar = avatar;
 	}
+
 
 	public long getId() {
 		return id;
@@ -91,6 +94,14 @@ public class User {
 		this.password = password;
 	}
 
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
 	public Set<Rol> getRol() {
 		return rol;
 	}
@@ -102,9 +113,13 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", username=" + username + ", email=" + email + ", password="
-				+ password + ", rol=" + rol + ", posts=" + posts + "]";
+				+ password + ", avatar=" + avatar + ", rol=" + rol + ", getId()=" + getId() + ", getName()=" + getName()
+				+ ", getUsername()=" + getUsername() + ", getEmail()=" + getEmail() + ", getPassword()=" + getPassword()
+				+ ", getAvatar()=" + getAvatar() + ", getRol()=" + getRol() + ", getClass()=" + getClass()
+				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
 	}
-	
+
+
 	
 	
 }

@@ -91,19 +91,11 @@ public class Post {
 	public void setContent(String content) {
 		this.content = content;
 	}
-/*
-	public Set<Comment> getComment() {
-		return comment;
-	}
 	
-	public void setComment(Set<Comment> comment) {
-		this.comment = comment;
-	}
-	*/
 	@Override
 	public String toString() {
-		return "Post [id=" + id + ", postTitle=" + title + ", postDescription=" + description
-				+ ", postContent=" + content + "]";
+		return "Post [id=" + id + ", user=" + user + ", title=" + title + ", description=" + description + ", content="
+				+ content;
 	}
 
 	

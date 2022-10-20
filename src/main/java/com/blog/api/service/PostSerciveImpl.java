@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.blog.api.dto.PostDTO;
 import com.blog.api.dto.PostDTOPageable;
+import com.blog.api.dto.UserDTO;
 import com.blog.api.entity.Post;
 import com.blog.api.entity.User;
 import com.blog.api.exception.NotFoundException;

@@ -6,8 +6,6 @@ import javax.validation.constraints.Size;
 public class PostDTO {
 	
 	public long id;
-	public String userEmail;
-	public String userName;
 	
 	@NotEmpty
 	@Size(min=2, message = "The title must have 2 characters")
@@ -19,23 +17,18 @@ public class PostDTO {
 	
 	@NotEmpty
 	public String content;
-	//public Set<CommentDTO> comment;
+
+	//User data
+	public UserDTO user;
 	
 	public PostDTO() {}
 
-	public PostDTO(long id, String userEmail, String title, String description, String content) {
+	public PostDTO(long id, String title, String description, String content) {
 		super();
 		this.id = id;
-		this.userEmail = userEmail;
 		this.title = title;
 		this.description = description;
 		this.content = content;
-	}
-
-	@Override
-	public String toString() {
-		return "PostDTO [id=" + id + ", postTitle=" + title + ", postDescription=" + description
-				+ ", postContent=" + content + "]";
 	}
 
 	public long getId() {
@@ -44,22 +37,6 @@ public class PostDTO {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-	
-	public String getUserEmail() {
-		return userEmail;
-	}
-	
-	public void setUserEmail(String userEmail) {
-		this.userEmail = userEmail;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
 	}
 
 	public String getTitle() {
@@ -85,15 +62,21 @@ public class PostDTO {
 	public void setContent(String content) {
 		this.content = content;
 	}
-/*
-	public Set<CommentDTO> getComment() {
-		return comment;
+
+	public UserDTO getUser() {
+		return user;
 	}
 
-	public void setComment(Set<CommentDTO> comment) {
-		this.comment = comment;
+	public void setUser(UserDTO user) {
+		this.user = user;
 	}
-*/
+
+	@Override
+	public String toString() {
+		return "PostDTO [id=" + id + ", title=" + title + ", description=" + description + ", content=" + content
+				+ ", user=" + user + "]";
+	}
+
 	
 	
 	

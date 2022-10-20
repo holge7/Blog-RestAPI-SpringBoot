@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.api.dto.LoginDTO;
 import com.blog.api.dto.RegisterDTO;
+import com.blog.api.dto.UserDTO;
 import com.blog.api.entity.Rol;
 import com.blog.api.entity.User;
+import com.blog.api.exception.NotFoundException;
 import com.blog.api.repository.RolRepository;
 import com.blog.api.repository.UserRepository;
 import com.blog.api.security.JwtTokenProvider;
+import com.blog.api.service.UserService;
 import com.blog.api.util.ApiResponse;
 import com.blog.api.util.ApiResponseCodeStatus;
 
@@ -39,18 +42,21 @@ public class AuthController {
 	private RolRepository rolRepository;
 	private PasswordEncoder passwordEncoder;
 	private JwtTokenProvider jwtTokenProvider;
+	private UserService userService;
 	
 	public AuthController(
 			AuthenticationManager authenticationManager, 
 			UserRepository userRepository, 
 			RolRepository rolRepository, 
 			PasswordEncoder passwordEncoder, 
-			JwtTokenProvider jwtTokenProvider) {
+			JwtTokenProvider jwtTokenProvider,
+			UserService userService) {
 		this.authenticationManager = authenticationManager;
 		this.userRepository = userRepository;
 		this.rolRepository = rolRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtTokenProvider = jwtTokenProvider;
+		this.userService = userService;
 	}
 	
 	
@@ -69,11 +75,14 @@ public class AuthController {
 		// Generate a JWT
 		String token = jwtTokenProvider.tokenGeneration(authentication);
 		
+		UserDTO user = userService.findByEmail(loginDTO.getUsernameOrEmail());
+		user.setJwt(token);
+		
 		// We return it
 		ApiResponse response = new ApiResponse();
 		response.status = ApiResponseCodeStatus.OK;
 		response.msg = "Welcome!, u are login";
-		response.data = token;
+		response.data = user;
 		
 		return new ResponseEntity<ApiResponse>(
 					response,
