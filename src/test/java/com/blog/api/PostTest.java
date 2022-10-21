@@ -36,12 +36,10 @@ import com.blog.api.seeder.Seeder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import ch.qos.logback.core.joran.action.Action;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class DemoApplicationTests {
+public class PostTest {
 	
 	@Autowired
 	RolRepository rolRepository;
@@ -173,18 +171,15 @@ public class DemoApplicationTests {
 		
 	}
 	
-	
-	
-	//@Test
+	@Test
 	@Transactional
 	public void useWithBadAuth() throws Exception {
 		long id = postRepository.getLastPost().id+1;
 		String jwtString = getAuth("jorge@gmail.com", "password");
-		
+
 		ResultActions result = createPost(id, jwtString+"Nop");
 
-		result.andExpect(status().isAccepted());
-		
+		result.andExpect(status().isUnauthorized());
 	}
 	
 	

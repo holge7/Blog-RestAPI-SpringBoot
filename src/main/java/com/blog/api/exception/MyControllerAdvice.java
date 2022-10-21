@@ -13,16 +13,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+
 import com.blog.api.util.ApiResponse;
 import com.blog.api.util.ApiResponseCodeStatus;
 
 @ControllerAdvice
 public class MyControllerAdvice extends ResponseEntityExceptionHandler{
 	
-	@ExceptionHandler(ApiException.class)
+	@ExceptionHandler({ApiException.class, InsufficientAuthenticationException.class})
 	public ResponseEntity<ApiResponse> handleApiException(ApiException e){
+		System.out.println("PASO POR MYCONTROLLER ADVICE PARA MANEJAR");
 		ApiResponse response = new ApiResponse(ApiResponseCodeStatus.ERROR, e.getMsg());
-		
+
 		return new ResponseEntity<ApiResponse>(
 					response,
 					HttpStatus.NOT_FOUND

@@ -19,7 +19,6 @@ import com.blog.api.dto.RegisterDTO;
 import com.blog.api.dto.UserDTO;
 import com.blog.api.entity.Rol;
 import com.blog.api.entity.User;
-import com.blog.api.exception.NotFoundException;
 import com.blog.api.repository.RolRepository;
 import com.blog.api.repository.UserRepository;
 import com.blog.api.security.JwtTokenProvider;

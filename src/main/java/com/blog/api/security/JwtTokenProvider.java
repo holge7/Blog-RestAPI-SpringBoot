@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import com.blog.api.exception.ApiException;
+import com.blog.api.exception.NotFoundException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -67,16 +68,22 @@ public class JwtTokenProvider {
 				.parseClaimsJws(token);
 			return true;
 		}catch (SignatureException ex) {
-			throw new ApiException("Not valid JWT sign");
+			System.out.println("Not valid JWT sign");
+			//throw new ApiException("Not valid JWT sign");			
 		}catch (MalformedJwtException e) {
-			throw new ApiException("Not valid Token JWT");
+			//throw new ApiException("Not valid Token JWT");
+			System.out.println("Not valid JWT sign");
 		}catch (ExpiredJwtException e) {
-			throw new ApiException("JWT expired");
+			//throw new ApiException("JWT expired");
+			System.out.println("Not valid JWT sign");
 		}catch (UnsupportedJwtException e) {
-			throw new ApiException("JWT not complatible");
+			//throw new ApiException("JWT not complatible");
+			System.out.println("Not valid JWT sign");
 		}catch (IllegalArgumentException e) {
-			throw new ApiException("JWT claims is empty");
+			//throw new ApiException("JWT claims is empty");
+			System.out.println("Not valid JWT sign");
 		}
+		return false;
 	}
 	
 }
