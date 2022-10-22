@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,11 +24,13 @@ import com.blog.api.assembler.PostAssembler;
 import com.blog.api.dto.PostDTO;
 import com.blog.api.dto.PostDTOPageable;
 import com.blog.api.dto.PostDTOPageableREST;
+import com.blog.api.entity.Post;
 import com.blog.api.entity.User;
 import com.blog.api.exception.NotFoundException;
 import com.blog.api.repository.UserRepository;
 import com.blog.api.service.PostService;
 import com.blog.api.util.ApiResponse;
+import com.blog.api.util.ApiResponseCodeStatus;
 
 
 @RestController
@@ -138,8 +141,21 @@ public class PostController {
 	//@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse> deletePost(@PathVariable long id){
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		//Check if post is not from his user or if is admin
+		if(!isOwnPost(id) && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+			ApiResponse response = new ApiResponse(ApiResponseCodeStatus.ERROR, "Is not your post");
+			return new ResponseEntity<ApiResponse>(
+					response,
+					HttpStatus.UNAUTHORIZED
+				);
+		}
+		
+		//Delete post
 		PostDTO data = postService.deletePostById(id);		
 		
+		//Return response
 		EntityModel<PostDTO> rest = assembler.toModel(data);
 		ApiResponse response = new ApiResponse(rest);
 		
@@ -157,17 +173,52 @@ public class PostController {
 			@PathVariable long id,
 			@Valid @RequestBody PostDTO postEdited
 			){
+		
 		postEdited.id=id;
+		
+		//Check if post is not from his user
+		if(!isOwnPost(id)) {
+			ApiResponse response = new ApiResponse(ApiResponseCodeStatus.ERROR, "Is not your post");
+			return new ResponseEntity<ApiResponse>(
+					response,
+					HttpStatus.UNAUTHORIZED
+				);
+		}
+		
+		//Edit post
 		PostDTO newPostEdited = postService.editPost(postEdited);
 		EntityModel<PostDTO> rest = assembler.toModel(newPostEdited);
-		ApiResponse response = new ApiResponse(rest);
 		
+		//Return response
+		ApiResponse response = new ApiResponse(rest);		
 		return new ResponseEntity<ApiResponse>(
 					response,
 					HttpStatus.OK
 				);
 	}
 	
+	public boolean isOwnPost(long postID) {
+		//Get user register
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		//Get post to do anything
+		Post post = postService.findOrThrow(postID);
+		
+		//Check if post is from his user
+		if (post.user.getEmail().equals(auth.getName())) {
+			return true;
+		}
+		return false;
+	}
 	
+	@PostMapping("/test2")
+	public void test2() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println(auth.getCredentials());
+		System.out.println(auth.getDetails());
+		System.out.println(auth.getName());
+		System.out.println(auth.getPrincipal());
+		System.out.println(auth.getAuthorities());
+	}
 	
 }

@@ -23,6 +23,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	public Boolean existsByEmail(String email);
 	
+	@Query(value = "SELECT * FROM user ORDER BY id DESC LIMIT 1", nativeQuery = true)
+	public User getLastUser();
+	
 	@Query(value = "SELECT * FROM user ORDER BY rand() LIMIT 1", nativeQuery = true)
 	public User getRandom();
 	

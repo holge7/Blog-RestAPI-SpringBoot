@@ -14,6 +14,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 
 import com.blog.api.util.ApiResponse;
 import com.blog.api.util.ApiResponseCodeStatus;
@@ -29,6 +30,17 @@ public class MyControllerAdvice extends ResponseEntityExceptionHandler{
 		return new ResponseEntity<ApiResponse>(
 					response,
 					HttpStatus.NOT_FOUND
+				);
+	}
+	
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<ApiResponse> AuthenticationException(AuthenticationException e){
+		System.out.println("PASO POR MYCONTROLLER ADVICE PARA MANEJAR");
+		ApiResponse response = new ApiResponse(ApiResponseCodeStatus.ERROR, e.getMessage());
+
+		return new ResponseEntity<ApiResponse>(
+					response,
+					HttpStatus.UNAUTHORIZED
 				);
 	}
 	

@@ -35,14 +35,4 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint{
 		
 	}
 	
-	public ResponseEntity<ApiResponse> test() {
-		
-		ApiResponse response = new ApiResponse("Hola , unautorizate loco");
-		return new ResponseEntity<ApiResponse>(
-					response,
-					HttpStatus.UNAUTHORIZED
-				);
-		
-	}
-	
 }

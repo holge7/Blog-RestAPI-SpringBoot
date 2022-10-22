@@ -15,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -28,11 +29,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blog.api.dto.PostDTO;
 import com.blog.api.entity.Post;
+import com.blog.api.entity.User;
+import com.blog.api.exception.NotFoundException;
 import com.blog.api.repository.PostRepository;
 import com.blog.api.repository.RolRepository;
 import com.blog.api.repository.UserRepository;
 import com.blog.api.security.JwtTokenProvider;
 import com.blog.api.seeder.Seeder;
+import com.blog.api.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -40,6 +44,9 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class PostTest {
+	
+	@Autowired
+	Utils utils;
 	
 	@Autowired
 	RolRepository rolRepository;
@@ -103,7 +110,7 @@ public class PostTest {
 		ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
 		String requestJson = ow.writeValueAsString(newPost);
 		
-		String jwtString = getAuth("jorge@gmail.com", "password");
+		String jwtString = utils.getAuth("jorge@gmail.com", "password");
 		
 		//Send request
 		ResultActions result = mockMvc.perform(post("/api/posts")
@@ -125,7 +132,7 @@ public class PostTest {
 
 		// Create post
 		long id = postRepository.getLastPost().id+1;
-		String jwtString = getAuth("jorge@gmail.com", "password");
+		String jwtString = utils.getAuth("jorge@gmail.com", "password");
 
 		createPost(id, jwtString);
 
@@ -153,12 +160,92 @@ public class PostTest {
 		.andExpect(jsonPath("$.data.content").value(postContent));
 	}
 	
+	@Test
+	@Transactional
+	public void edit_other_Post() throws Exception {
+		String jwtString = utils.getAuth("jorge@gmail.com", "password");
+
+		//Create one post with other person
+		long id = postRepository.getLastPost().id+1;
+		User user = userRepository.getLastUser();
+
+		String jwtString2 = utils.getAuth(user.getEmail(), "password");
+		createPost(id, jwtString2);
+		
+		// Edit post
+		String newTitle = "Title updateado";
+		String newDescription = "updateeeeeeee :)";
+		String postContent = "yes";
+		
+		PostDTO editPost = new PostDTO(id, newTitle, newDescription, postContent);
+		ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
+		String requestJson = ow.writeValueAsString(editPost);
+		
+		// Send edit post
+		ResultActions result = mockMvc.perform(put("/api/posts/"+id)
+				.header("Authorization", "Bearer " + jwtString)
+				.content(requestJson)
+				.contentType(MediaType.APPLICATION_JSON));
+		
+		// Check if it was edited
+		result.andExpect(status().isUnauthorized());
+	}
+	
+	@Test
+	@Transactional
+	public void delete_other_Post_with_admin() throws Exception {
+		String jwtString = utils.getAuth("jorge@gmail.com", "password");
+
+		//Create one post with other person
+		long id = postRepository.getLastPost().id+1;
+		User user = userRepository.getLastUser();
+
+		String jwtString2 = utils.getAuth(user.getEmail(), "password");
+		createPost(id, jwtString2);
+		
+		// Delete other post
+		ResultActions result = mockMvc.perform(delete("/api/posts/"+id)
+				.header("Authorization", "Bearer " + jwtString)
+				.contentType(MediaType.APPLICATION_JSON));
+		
+		// Check if it was edited
+		result.andExpect(status().isAccepted());
+	}
+	
+	@Test
+	@Transactional
+	public void delete_other_Post() throws Exception {
+		long id = postRepository.getLastPost().id+1;
+		long lastUserID = userRepository.getLastUser().getId();
+		
+		User userCreator = userRepository.findById(lastUserID)
+				.orElseThrow(()->new NotFoundException("User", lastUserID));
+		
+		User userDeleter = userRepository.findById(lastUserID-1)
+				.orElseThrow(()->new NotFoundException("User", lastUserID-1));
+		
+		String jwtDelete = utils.getAuth(userDeleter.getEmail(), "password");
+
+		//Create one post with other person
+
+		String jwtCreate = utils.getAuth(userCreator.getEmail(), "password");
+		createPost(id, jwtCreate);
+		
+		// Delete other post
+		ResultActions result = mockMvc.perform(delete("/api/posts/"+id)
+				.header("Authorization", "Bearer " + jwtDelete)
+				.contentType(MediaType.APPLICATION_JSON));
+		
+		// Check if it was edited
+		result.andExpect(status().isUnauthorized());
+	}
+	
 	
 	@Test
 	@Transactional
 	public void deletePost() throws Exception {
 		long id = postRepository.getLastPost().id+1;
-		String jwtString = getAuth("jorge@gmail.com", "password");
+		String jwtString = utils.getAuth("jorge@gmail.com", "password");
 		
 		createPost(id, jwtString);
 
@@ -175,7 +262,7 @@ public class PostTest {
 	@Transactional
 	public void useWithBadAuth() throws Exception {
 		long id = postRepository.getLastPost().id+1;
-		String jwtString = getAuth("jorge@gmail.com", "password");
+		String jwtString = utils.getAuth("jorge@gmail.com", "password");
 
 		ResultActions result = createPost(id, jwtString+"Nop");
 
@@ -198,13 +285,6 @@ public class PostTest {
 		return result;
 	}
 	
-	public String getAuth(String user, String pass) {
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(user, pass
-			));
-		
-		return jwtTokenProvider.tokenGeneration(authentication);
-	}
 
 	
 }

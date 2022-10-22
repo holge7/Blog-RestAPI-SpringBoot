@@ -81,7 +81,6 @@ public class Seeder{
 	@GetMapping("/roles")
 	public void loadRoles() {
 		System.out.println("loadRoles - Starting");
-		//rolService.truncatee();
 		Rol rolUser = new Rol(1, "ROLE_USER");
 		Rol rolAdmin = new Rol(2, "ROLE_ADMIN");
 		this.rolRepository.save(rolUser);
@@ -130,7 +129,7 @@ public class Seeder{
 	}
 	
 	@GetMapping("/comment")
-	private void loadComments() {
+	public void loadComments() {
 		Comment comment;
 		
 		for (int i = 1; i < commentNumber; i++) {
@@ -180,5 +179,16 @@ public class Seeder{
 		return post;
 	}
 	
+	public Comment createCommentRandom(long id) {
+		Comment comment = new Comment();
+		
+		comment.setId(id);
+		comment.setBody(faker.lorem().sentence());
+		comment.setUser(searchUser());
+		comment.setPost(searchPost());
+		commentRepository.save(comment);
+		
+		return comment;
+	}
 	
 }

@@ -14,10 +14,6 @@ public class RolServiceImpl implements RolService{
 		this.rolRepository = rolRepository;
 	}
 	
- 	@Transactional
-	@Override
-	public void truncatee() {
-		rolRepository.truncate();
-	}
+
 
 }

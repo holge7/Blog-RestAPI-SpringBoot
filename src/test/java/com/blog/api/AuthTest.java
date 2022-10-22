@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class AuthTest {
-	
+
 	@Autowired
 	RolRepository rolRepository;
 	
@@ -126,13 +126,4 @@ public class AuthTest {
 		assertEquals(user2.getEmail(), "jorgee@gmail.com");
 	}
 	
-	
-	
-	public String getAuth(String user, String pass) {
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(user, pass
-			));
-		
-		return jwtTokenProvider.tokenGeneration(authentication);
-	}
 }

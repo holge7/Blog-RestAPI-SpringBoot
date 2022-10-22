@@ -25,6 +25,7 @@ import com.blog.api.exception.NotFoundException;
 import com.blog.api.repository.UserRepository;
 import com.blog.api.service.CommentService;
 import com.blog.api.util.ApiResponse;
+import com.blog.api.util.ApiResponseCodeStatus;
 
 import java.util.List;
 
@@ -78,6 +79,18 @@ public class CommentController {
 	public ResponseEntity<ApiResponse> deleteComment(
 			@PathVariable(value = "commentID") long commentID){
 		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		//Check if it his comment
+		if (!isOwnComment(commentID) && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+			ApiResponse response = new ApiResponse(ApiResponseCodeStatus.ERROR, "Is not your comment");
+			return new ResponseEntity<ApiResponse>(
+					response,
+					HttpStatus.UNAUTHORIZED
+				);
+		}
+		
+		
 		CommentDTO dto = commentService.deleteComment(commentID);
 		
 		return generateResponse(dto, HttpStatus.ACCEPTED);
@@ -94,7 +107,7 @@ public class CommentController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
 		User user = userRepository.findByEmail(auth.getName())
-				.orElseThrow(()->new NotFoundException("") );
+				.orElseThrow(()->new NotFoundException("User", auth.getName()));
 
 		
 		CommentDTO dto = commentService.createComment(postID, commentDTO, user);
@@ -113,9 +126,20 @@ public class CommentController {
 				@PathVariable(value = "id") long id,
 				@RequestBody Map<String, String> data
 			){
-		
+
+		//Check if it his comment
+		if (!isOwnComment(id)) {
+			ApiResponse response = new ApiResponse(ApiResponseCodeStatus.ERROR, "Is not your comment");
+			return new ResponseEntity<ApiResponse>(
+					response,
+					HttpStatus.UNAUTHORIZED
+				);
+		}
+
+		//Edit post
 		CommentDTO dto = commentService.editCommentDTO(id, data.get("body"));
 		
+		//Return response
 		return generateResponse(dto, HttpStatus.OK);
 	}
 	
@@ -133,6 +157,21 @@ public class CommentController {
 					httpStatus
 				);
 	}
+	
+	public boolean isOwnComment(long commentID) {
+		//Get user register
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		//Get post to do anything
+		CommentDTO commentDTO = commentService.findByID(commentID);
+		
+		//Check if post is from his user
+		if (commentDTO.userEmail.equals(auth.getName())) {
+			return true;
+		}
+		return false;
+	}
+	
 	
 	private ResponseEntity<ApiResponse> generateResponse(List<CommentDTO> data, HttpStatus httpStatus){
 		
